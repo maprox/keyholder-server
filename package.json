@@ -1,0 +1,28 @@
+{
+  "name": "keyholder-server",
+  "version": "1.0.0",
+  "description": "Backend server for the keyholder project",
+  "main": "./src/index.js",
+  "scripts": {
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maprox/keyholder-server.git"
+  },
+  "keywords": [
+    "nodejs",
+    "redis",
+    "keyholder"
+  ],
+  "author": "aintsay",
+  "license": "MIT",
+  "homepage": "https://github.com/maprox/keyholder-server",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4",
+    "jsonwebtoken": "^8.1.0",
+    "redis": "^2.8.0"
+  }
+}
