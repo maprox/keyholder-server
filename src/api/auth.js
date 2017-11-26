@@ -19,6 +19,7 @@ function signUp(req, res) {
     return auth.signUp(
         req.body.login,
         req.body.secret,
+        req.body.data || null,
         (payload) => payload
             ? res.json(payload)
             : res.status(401).send("User already exists.")
@@ -39,7 +40,6 @@ function signIn(req, res) {
     return auth.signIn(
         req.body.login,
         req.body.secret,
-        req.body.data || null,
         (payload) => payload
             ? res.json(payload)
             : res.status(401).send("Authentication failed.")
