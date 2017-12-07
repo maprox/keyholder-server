@@ -100,7 +100,6 @@ function getSession(token) {
     try {
         return jwt.verify(token, config.ssl.key);
     } catch (err) {
-        console.error(err);
         return null;
     }
 }
