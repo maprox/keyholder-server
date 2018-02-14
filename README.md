@@ -23,9 +23,9 @@ Backend server for the Keyholder project
 
 * **SSL_PORT** [*3443*] - Keyholder Server port (SSL)
 
-* **SSL_PRIVATE_KEY** [*./ssl/privatekey.pem*] - SSL Private Key
+* **SSL_PRIVATE_KEY** [null] - SSL Private Key
 
-* **SSL_CERTIFICATE** [*./ssl/certificate.crt*] - SSL Certificate
+* **SSL_CERTIFICATE** [null] - SSL Certificate
 
 * **REDIS_HOST** [*localhost*] - Redis server host
 

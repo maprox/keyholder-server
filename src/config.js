@@ -1,10 +1,12 @@
 const fs = require('fs');
 
+const isSslEnabled = !!process.env.SSL_PRIVATE_KEY;
+
 module.exports = {
     ssl: {
-        enabled: !!process.env.SSL_PRIVATE_KEY || true,
-        key: fs.readFileSync(process.env.SSL_PRIVATE_KEY || './ssl/privatekey.pem'),
-        cert: fs.readFileSync(process.env.SSL_CERTIFICATE || './ssl/certificate.crt'),
+        enabled: isSslEnabled,
+        key: isSslEnabled ? fs.readFileSync(process.env.SSL_PRIVATE_KEY) : null,
+        cert: isSslEnabled ? fs.readFileSync(process.env.SSL_CERTIFICATE) : null,
         port: process.env.SSL_PORT || 3443
     },
     redis: {
