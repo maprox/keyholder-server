@@ -9,6 +9,9 @@ module.exports = {
         cert: isSslEnabled ? fs.readFileSync(process.env.SSL_CERTIFICATE) : null,
         port: process.env.SSL_PORT || 3443
     },
+    jwt: {
+        secret: process.env.JWT_SECRET
+    },
     redis: {
         host: process.env.REDIS_HOST || "localhost",
         port: process.env.REDIS_PORT || 6379

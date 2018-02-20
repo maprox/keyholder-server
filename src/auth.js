@@ -79,7 +79,7 @@ function signIn(login, secret, callback) {
             }
         };
 
-        return jwt.sign(payload, config.ssl.key, options, (err, token) => {
+        return jwt.sign(payload, config.jwt.secret, options, (err, token) => {
             const payload = {
                 token: token,
                 data: content.data
@@ -98,7 +98,7 @@ function signIn(login, secret, callback) {
  */
 function getSession(token) {
     try {
-        return jwt.verify(token, config.ssl.key);
+        return jwt.verify(token, config.jwt.secret);
     } catch (err) {
         return null;
     }

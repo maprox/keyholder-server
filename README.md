@@ -19,6 +19,8 @@ Backend server for the Keyholder project
 
 ### Options
 
+* **JWT_SECRET** - String used to sign jwt tokens / **REQUIRED**
+
 * **PORT** [*3000*] - Keyholder Server port
 
 * **SSL_PORT** [*3443*] - Keyholder Server port (SSL)
