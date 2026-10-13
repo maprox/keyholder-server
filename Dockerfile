@@ -1,8 +1,7 @@
-FROM node:latest
-MAINTAINER Alexander Y Lyapko box@sunsay.ru
-RUN mkdir -p /opt/keyholder
-COPY . /opt/keyholder
+FROM node:22-bookworm-slim
 WORKDIR /opt/keyholder
-RUN npm install
+COPY package.json package-lock.json* ./
+RUN npm install --omit=dev
+COPY . .
 EXPOSE 3000
-CMD [ "npm", "start" ]
+CMD ["npm", "start"]

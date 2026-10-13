@@ -7,39 +7,48 @@ const redis = require('redis');
 const config = require('./config');
 
 let redisClient;
+let ready;
 
 /**
- * @returns {RedisClient}
+ * @returns {Promise<import('redis').RedisClientType>}
  */
 function getRedisClient() {
     if (!redisClient) {
-        // create a new redis client and connect
-        redisClient = redis.createClient(
-            config.redis.port,
-            config.redis.host
-        );
+        redisClient = redis.createClient({
+            socket: {
+                host: config.redis.host,
+                port: Number(config.redis.port)
+            }
+        });
 
-        // if an error occurs, print it to the console
         redisClient.on('error', (err) => {
             console.log("REDIS: Error " + err);
         });
+
+        ready = redisClient.connect();
     }
-    return redisClient;
+    return ready.then(() => redisClient);
 }
 
 /**
- * @param item
- * @param fn
+ * @param {string} item
+ * @param {Function} fn
  */
 function get(item, fn) {
-    return getRedisClient().get(item, fn);
+    getRedisClient()
+        .then((client) => client.get(item))
+        .then((reply) => fn(null, reply))
+        .catch((err) => fn(err));
 }
 
 /**
- * @param item
- * @param value
- * @param fn
+ * @param {string} item
+ * @param {string} value
+ * @param {Function} fn
  */
 function set(item, value, fn) {
-    return getRedisClient().set(item, value, fn);
+    getRedisClient()
+        .then((client) => client.set(item, value))
+        .then(() => fn(null, 'OK'))
+        .catch((err) => fn(err));
 }
