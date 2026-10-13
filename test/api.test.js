@@ -3,12 +3,10 @@ process.env.JWT_SECRET = 'test-jwt-secret';
 jest.mock('../src/storage', () => {
   const store = new Map();
   return {
-    get: jest.fn((key, cb) => {
-      cb(null, store.has(key) ? store.get(key) : null);
-    }),
-    set: jest.fn((key, value, cb) => {
+    get: jest.fn(async (key) => (store.has(key) ? store.get(key) : null)),
+    set: jest.fn(async (key, value) => {
       store.set(key, value);
-      cb(null, 'OK');
+      return 'OK';
     }),
     __clear: () => store.clear(),
     __store: store,

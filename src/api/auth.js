@@ -1,47 +1,48 @@
 module.exports = {
-    signUp: signUp,
-    signIn: signIn
+    signUp,
+    signIn
 };
 
 const auth = require('../auth');
 
 /**
- * @param req
- * @param res
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
  */
-function signUp(req, res) {
+async function signUp(req, res) {
     if (!req.body
         || !req.body.login
         || !req.body.secret
     ) {
         return res.status(400).send("Please specify 'login' and 'secret' parameters.");
     }
-    return auth.signUp(
+
+    const payload = await auth.signUp(
         req.body.login,
         req.body.secret,
-        req.body.data || null,
-        (payload) => payload
-            ? res.json(payload)
-            : res.status(401).send("User already exists.")
+        req.body.data || null
     );
+
+    return payload
+        ? res.json(payload)
+        : res.status(401).send('User already exists.');
 }
 
 /**
- * @param req
- * @param res
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
  */
-function signIn(req, res) {
+async function signIn(req, res) {
     if (!req.body
         || !req.body.login
         || !req.body.secret
     ) {
         return res.status(400).send("Please specify 'login' and 'secret' parameters.");
     }
-    return auth.signIn(
-        req.body.login,
-        req.body.secret,
-        (payload) => payload
-            ? res.json(payload)
-            : res.status(401).send("Authentication failed.")
-    );
+
+    const payload = await auth.signIn(req.body.login, req.body.secret);
+
+    return payload
+        ? res.json(payload)
+        : res.status(401).send('Authentication failed.');
 }

@@ -1,6 +1,6 @@
 module.exports = {
-    get: get,
-    set: set
+    get,
+    set
 };
 
 const redis = require('redis');
@@ -12,7 +12,7 @@ let ready;
 /**
  * @returns {Promise<import('redis').RedisClientType>}
  */
-function getRedisClient() {
+async function getRedisClient() {
     if (!redisClient) {
         redisClient = redis.createClient({
             socket: {
@@ -22,33 +22,30 @@ function getRedisClient() {
         });
 
         redisClient.on('error', (err) => {
-            console.log("REDIS: Error " + err);
+            console.log('REDIS: Error ' + err);
         });
 
         ready = redisClient.connect();
     }
-    return ready.then(() => redisClient);
+    await ready;
+    return redisClient;
 }
 
 /**
  * @param {string} item
- * @param {Function} fn
+ * @returns {Promise<string|null>}
  */
-function get(item, fn) {
-    getRedisClient()
-        .then((client) => client.get(item))
-        .then((reply) => fn(null, reply))
-        .catch((err) => fn(err));
+async function get(item) {
+    const client = await getRedisClient();
+    return client.get(item);
 }
 
 /**
  * @param {string} item
  * @param {string} value
- * @param {Function} fn
+ * @returns {Promise<string>}
  */
-function set(item, value, fn) {
-    getRedisClient()
-        .then((client) => client.set(item, value))
-        .then(() => fn(null, 'OK'))
-        .catch((err) => fn(err));
+async function set(item, value) {
+    const client = await getRedisClient();
+    return client.set(item, value);
 }

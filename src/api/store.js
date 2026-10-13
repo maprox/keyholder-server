@@ -1,48 +1,48 @@
 module.exports = {
-    get: get,
-    put: put
+    get,
+    put
 };
 
 const storage = require('../storage');
 
 /**
- * @param req
- * @param res
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
  */
-function get(req, res) {
+async function get(req, res) {
     const key = req.session.user.login;
-    storage.get(key, function (err, reply) {
-        const content = reply ? JSON.parse(reply) : null;
-        if (content) {
-            return res.send(content.data);
-        } else {
-            return res.status(404).send('Not found.');
-        }
-    });
+    const reply = await storage.get(key);
+    const content = reply ? JSON.parse(reply) : null;
+
+    if (content) {
+        return res.send(content.data);
+    }
+    return res.status(404).send('Not found.');
 }
 
 /**
- * @param req
- * @param res
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
  */
-function put(req, res) {
+async function put(req, res) {
     if (!req.body || !req.body.data) {
         return res.status(400).send("Please specify 'data' parameter.");
     }
+
     const key = req.session.user.login;
-    storage.get(key, function (err, reply) {
-        const content = reply ? JSON.parse(reply) : null;
-        if (content) {
-            content.data = req.body.data;
-            storage.set(key, JSON.stringify(content), (err) => {
-                if (!err) {
-                    return res.status(204).send();
-                } else {
-                    return res.status(500).send('Error happened, try again later.');
-                }
-            });
-        } else {
-            return res.status(404).send('Not found.');
-        }
-    });
+    const reply = await storage.get(key);
+    const content = reply ? JSON.parse(reply) : null;
+
+    if (!content) {
+        return res.status(404).send('Not found.');
+    }
+
+    content.data = req.body.data;
+
+    try {
+        await storage.set(key, JSON.stringify(content));
+        return res.status(204).send();
+    } catch (err) {
+        return res.status(500).send('Error happened, try again later.');
+    }
 }

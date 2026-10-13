@@ -1,7 +1,7 @@
 module.exports = {
-    init: init,
-    signUp: signUp,
-    signIn: signIn
+    init,
+    signUp,
+    signIn
 };
 
 const jwt = require('jsonwebtoken');
@@ -34,62 +34,58 @@ function init(app) {
  * @param {string} login
  * @param {string} secret
  * @param {string} data
- * @param {Function} callback
+ * @returns {Promise<object|false>}
  */
-function signUp(login, secret, data, callback) {
-    return storage.get(login, (err, reply) => {
-        if (reply) {
-            return callback(false);
-        }
+async function signUp(login, secret, data) {
+    const reply = await storage.get(login);
+    if (reply) {
+        return false;
+    }
 
-        const content = {
-            hash: crypto.sha256(login + ':' + secret),
-            data: data
-        };
+    const content = {
+        hash: crypto.sha256(login + ':' + secret),
+        data: data
+    };
 
-        return storage.set(login, JSON.stringify(content), (err) => {
-            if (!err) {
-                return signIn(login, secret, callback);
-            } else {
-                console.error('Error happened during sign up. ', err);
-                return callback(false);
-            }
-        });
-    });
+    try {
+        await storage.set(login, JSON.stringify(content));
+        return signIn(login, secret);
+    } catch (err) {
+        console.error('Error happened during sign up. ', err);
+        return false;
+    }
 }
 
 /**
  * @param {string} login
  * @param {string} secret
- * @param {Function} callback
+ * @returns {Promise<object|false>}
  */
-function signIn(login, secret, callback) {
-    return storage.get(login, (err, reply) => {
-        const content = reply ? JSON.parse(reply) : null;
+async function signIn(login, secret) {
+    const reply = await storage.get(login);
+    const content = reply ? JSON.parse(reply) : null;
 
-        if (!content || content.hash !== crypto.sha256(login + ':' + secret)) {
-            callback(false);
-            return;
+    if (!content || content.hash !== crypto.sha256(login + ':' + secret)) {
+        return false;
+    }
+
+    const options = {expiresIn: '1h'};
+    const payload = {
+        user: {
+            login: login
         }
+    };
 
-        const options = {expiresIn: '1h'};
-        const payload = {
-            user: {
-                login: login
-            }
+    try {
+        const token = jwt.sign(payload, config.jwt.secret, options);
+        return {
+            token: token,
+            data: content.data
         };
-
-        return jwt.sign(payload, config.jwt.secret, options, (err, token) => {
-            const payload = {
-                token: token,
-                data: content.data
-            };
-            if (err) {
-                console.error('Can\'t generate token: ', err);
-            }
-            return callback(!err ? payload : false);
-        });
-    });
+    } catch (err) {
+        console.error('Can\'t generate token: ', err);
+        return false;
+    }
 }
 
 /**
