@@ -1,4 +1,5 @@
 FROM node:latest
+MAINTAINER Alexander Y Lyapko box@sunsay.ru
 WORKDIR /opt/keyholder
 COPY package.json package-lock.json* ./
 RUN npm install --omit=dev
