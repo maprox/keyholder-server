@@ -1,5 +1,7 @@
 node_modules/
+.worktrees/
 .idea
 /ssl
 *.log
 *.cmd
+coverage/

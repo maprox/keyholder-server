@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "Backend server for the keyholder project",
   "main": "./src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -20,9 +23,12 @@
   "license": "MIT",
   "homepage": "https://github.com/maprox/keyholder-server",
   "dependencies": {
-    "body-parser": "^1.17.2",
-    "express": "^4.15.4",
-    "jsonwebtoken": "^8.1.0",
-    "redis": "^2.8.0"
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "redis": "^4.7.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.3.1"
   }
 }

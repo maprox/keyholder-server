@@ -1,45 +1,51 @@
 module.exports = {
-    get: get,
-    set: set
+    get,
+    set
 };
 
 const redis = require('redis');
 const config = require('./config');
 
 let redisClient;
+let ready;
 
 /**
- * @returns {RedisClient}
+ * @returns {Promise<import('redis').RedisClientType>}
  */
-function getRedisClient() {
+async function getRedisClient() {
     if (!redisClient) {
-        // create a new redis client and connect
-        redisClient = redis.createClient(
-            config.redis.port,
-            config.redis.host
-        );
-
-        // if an error occurs, print it to the console
-        redisClient.on('error', (err) => {
-            console.log("REDIS: Error " + err);
+        redisClient = redis.createClient({
+            socket: {
+                host: config.redis.host,
+                port: Number(config.redis.port)
+            }
         });
+
+        redisClient.on('error', (err) => {
+            console.log('REDIS: Error ' + err);
+        });
+
+        ready = redisClient.connect();
     }
+    await ready;
     return redisClient;
 }
 
 /**
- * @param item
- * @param fn
+ * @param {string} item
+ * @returns {Promise<string|null>}
  */
-function get(item, fn) {
-    return getRedisClient().get(item, fn);
+async function get(item) {
+    const client = await getRedisClient();
+    return client.get(item);
 }
 
 /**
- * @param item
- * @param value
- * @param fn
+ * @param {string} item
+ * @param {string} value
+ * @returns {Promise<string>}
  */
-function set(item, value, fn) {
-    return getRedisClient().set(item, value, fn);
+async function set(item, value) {
+    const client = await getRedisClient();
+    return client.set(item, value);
 }
